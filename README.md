@@ -9,6 +9,8 @@
   ### Clone the repository and move into the code directory. Then install the Python dependencies.
         pip install pyfiglet
 
+Tested on Python 3
+
         python Git-Scraper.py
 
 <img width="433" alt="Capture" src="https://github.com/skar4444/Git-Scraper/assets/43452298/4e3f86f4-6ca7-4050-bbee-527b5501733d">
