@@ -1,8 +1,7 @@
-### Git-Scraper
+### Git-Scraper -- A multithreaded Git credential scraping tool.
 ## It allows you to search sensitive credentials (Based on your keyword file) in Git repositories and create a HTML report
 
-### A multithreaded Git credential scraping tool.
-### Tested on GitHub,GitLab and gerrit
+                                                        ### Tested on GitHub,GitLab and gerrit
 
 ### Contributing
 ### Clone the repository and move into the code directory. Then install the Python dependencies.
