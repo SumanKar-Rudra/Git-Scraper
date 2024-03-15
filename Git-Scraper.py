@@ -39,7 +39,7 @@ def clone_repos(repo_list_file, destination):
 
 def search_keywords_in_repo(keyword, file_path):
     """
-    Searches for a keyword within a file and returns lines around the keyword.
+    Searches for a keyword within a file and returns two lines above and below containing the keyword.
     """
     try:
         with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
@@ -49,8 +49,8 @@ def search_keywords_in_repo(keyword, file_path):
             keyword_regex = re.compile(re.escape(keyword), re.IGNORECASE)
             for line_num, line in enumerate(lines, start=1):
                 if keyword_regex.search(line):
-                    start_line = max(0, line_num - 5)
-                    end_line = min(len(lines), line_num + 6)
+                    start_line = max(0, line_num - 2)
+                    end_line = min(len(lines), line_num + 3)
                     context_lines = [lines[i].strip() for i in range(start_line - 1, end_line)]
                     results.append((file_path, line_num, context_lines))
 
@@ -81,44 +81,76 @@ def generate_html_output(results, output_file, keywords):
     Generates an accordion-based HTML report with the search results, highlighting all keywords with red text background.
     """
     with open(output_file, 'w') as f:
-        f.write("<!DOCTYPE html>\n<html>\n<head>\n<title>Search Results</title>\n")
-        f.write("<style>.highlight { background-color: red; }</style>\n")
-        f.write("<script>\n")
-        f.write("function filterKeywords(keyword) {\n")
-        f.write("  var items = document.getElementsByClassName('accordion-item');\n")
-        f.write("  for (var i = 0; i < items.length; i++) {\n")
-        f.write("    var content = items[i].getElementsByClassName('content')[0];\n")
-        f.write("    if (content.innerHTML.toLowerCase().includes(keyword.toLowerCase())) {\n")
-        f.write("      items[i].style.display = 'block';\n")
-        f.write("    } else {\n")
-        f.write("      items[i].style.display = 'none';\n")
-        f.write("    }\n")
-        f.write("  }\n")
-        f.write("}\n")
-        f.write("</script>\n")
-        f.write("</head>\n<body>\n")
-        f.write("<h1>Search Results</h1>\n")
-        f.write("<input type='text' id='filterInput' onkeyup='filterKeywords(this.value)' placeholder='Filter by keyword..'>\n")
-        f.write("<div id='accordion'>\n")
+        f.write('''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        .accordion {
+            background-color: #f9f9f9;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+            border-radius: 10px;
+        }
+
+        .active, .accordion:hover {
+            background-color: #ddd;
+        }
+
+        .panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+
+        .highlight {
+            background-color: red;
+            color: white;
+            padding: 3px;
+            border-radius: 3px;
+        }
+    </style>
+    <script>
+        function filterKeywords(keyword) {
+            var items = document.getElementsByClassName('accordion');
+            for (var i = 0; i < items.length; i++) {
+                var panel = items[i].nextElementSibling;
+                if (panel.innerHTML.toLowerCase().includes(keyword.toLowerCase())) {
+                    items[i].style.display = 'block';
+                } else {
+                    items[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+
+<h1>Search Results</h1>
+<input type="text" id="filterInput" onkeyup="filterKeywords(this.value)" placeholder="Filter by keyword..">
+''')
         for keyword in keywords:
             f.write(f"<button onclick=\"filterKeywords('{keyword}')\">{keyword}</button>\n")
-            f.write(f"<div class='accordion-item'>\n")
-            f.write(f"<h2>{keyword}</h2>\n")
-            f.write("<div class='content'>\n")
             for result in results:
                 if keyword.lower() in result[2][0].lower():
-                    f.write(f"<details>\n")
-                    f.write(f"<summary>{result[0]} (Line: {result[1]})</summary>\n")
+                    f.write(f"<button class='accordion'>{result[0]} (Line: {result[1]})</button>\n")
+                    f.write(f"<div class='panel'>\n")
                     f.write("<ul>\n")
                     for line in result[2]:
                         line = re.sub(re.escape(keyword), f'<span class="highlight">{keyword}</span>', line, flags=re.IGNORECASE)
                         f.write(f"<li>{line}</li>\n")
                     f.write("</ul>\n")
-                    f.write("</details>\n")
-            f.write("</div>\n")
-            f.write("</div>\n")
-        f.write("</div>\n")
-        f.write("</body>\n</html>\n")
+                    f.write("</div>\n")
     print(f"HTML output generated: {output_file}")
 
 if __name__ == "__main__":
