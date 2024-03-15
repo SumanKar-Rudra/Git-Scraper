@@ -5,5 +5,5 @@ It allows you to search sensitive credentials (Based on your keyward file) in Gi
 ### Tested on GitHub,GitLab and gerrit
 
 ### Contributing
-Clone the repository and move into the code directory. Then install the Python dependencies.
+### Clone the repository and move into the code directory. Then install the Python dependencies.
         pip install pyfiglet
