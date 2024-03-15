@@ -1,5 +1,5 @@
 ### Git-Scraper
-It allows you to search sensitive credentials (Based on your keyward file) in Git repositories.
+## It allows you to search sensitive credentials (Based on your keyward file) in Git repositories and create a HTML report
 
 ### A multithreaded Git credential scraping tool...... 
 ### Tested on GitHub,GitLab and gerrit
